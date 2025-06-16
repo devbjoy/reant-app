@@ -4,8 +4,10 @@ namespace App\Livewire\Admin\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Title('Login Now')]
 class Login extends Component
 {
     public $email = '';
@@ -21,23 +23,30 @@ class Login extends Component
     }
     public function loginSave()
     {
-        dd('hello');
         $this->validate();
 
         if (
-            !Auth::attempt(
-                ['email' => $this->email, 'password' => $this->password],
-                $this->remember
-            )
+            Auth::attempt([
+                'email' => $this->email,
+                'password' => $this->password,
+            ], $this->remember)
         ) {
+            if (Auth::user()->status == 0) {
+                Auth::logout();
+
+                throw ValidationException::withMessages([
+                    'message' => 'Your account has been blocked. Please contact the administrator.',
+                ]);
+            }
+            session()->regenerate();
+            session()->flash('success', 'Login successful!');
+            return $this->redirect('/admin/dashboard', true);
+        } else {
             throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
+                'email' => 'The provided credentials do not match our records.',
             ]);
         }
 
-        session()->regenerate();
-
-        return redirect()->intended('/admin/dashboard');
     }
     public function render()
     {

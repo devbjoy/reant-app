@@ -3,6 +3,7 @@ layer(base);
 
 @import "tailwindcss";
 @source "../views";
+@source "../../vendor/rappasoft/laravel-livewire-tables/resources/views";
 
 /* @import "tailwindcss"; */
 
