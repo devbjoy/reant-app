@@ -53,24 +53,7 @@ $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(valu
 
 
   @livewireScripts
-  {{-- @livewireAlertScripts --}}
 
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  {{-- swite alert litichner --}}
-  <script>
-    Livewire.on('swal:success', event => {
-      Swal.fire({
-        title: event.message,
-        icon: 'success',
-        timer: 3000,
-        toast: false,
-        position: 'center',
-        showConfirmButton: false,
-      });
-
-    });
-  </script>
 
 </body>
 

@@ -27,5 +27,9 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('canAccess', function ($permission) {
             return auth()->check() && auth()->user()->hasPermission($permission);
         });
+
+        // share the company setting data
+        $companySettings = \App\Models\CompanySetting::all()->pluck('value', 'key')->toArray();
+        view()->share('companySettings', $companySettings);
     }
 }

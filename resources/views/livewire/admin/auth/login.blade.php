@@ -63,11 +63,14 @@
           </div>
           <form wire:submit.prevent="loginSave">
             @error('message')
-
               <div class="bg-red-300 text-white text-md font-normal px-4 py-2.5 rounded-md">
                 {{ $message }}
-                {{-- hellow rold --}}
               </div>
+              @endif
+              @if (session('message'))
+                <div class="bg-green-300 text-white text-md font-normal px-4 py-2.5 rounded-md">
+                  {{ session('message') }}
+                </div>
               @endif
               <div class="space-y-5">
                 <!-- Email -->

@@ -39,6 +39,10 @@ class PermissionSeeder extends Seeder
             ['name' => 'restore user', 'group' => 'user'],
             ['name' => 'force delete user', 'group' => 'user'],
 
+            ['name' => 'view company setting', 'group' => 'company setting'],
+            ['name' => 'edit company setting', 'group' => 'company setting'],
+
+
         ];
 
         foreach ($permissions as $perm) {
