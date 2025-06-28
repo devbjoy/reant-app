@@ -1,20 +1,21 @@
 <?php
 
-namespace App\Livewire\Admin;
+namespace App\Livewire\Tenant;
 
 use Illuminate\Support\Facades\Auth;
 use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Ramsey\Uuid\Type\Integer;
 
-#[Title('Profile')]
-class Porfile extends Component
+#[Title('Profile Info')]
+class Profile extends Component
 {
     use WithFileUploads;
 
 
-    public $username, $email, $profile_image, $preview_image, $old_password, $new_password, $confirm_password;
+    public $first_name, $last_name, $phone_number, $pin, $email, $profile_image, $preview_image, $old_password, $new_password, $confirm_password;
 
     public function removeTempImage()
     {
@@ -28,7 +29,7 @@ class Porfile extends Component
                 ->show();
         } else {
             LivewireAlert::warning()
-                ->title('Preview image not found')
+                ->title('This image not removeable')
                 ->timer(5000)
                 ->toast()
                 ->position('bottom-end')
@@ -38,37 +39,47 @@ class Porfile extends Component
     }
     public function mount()
     {
+        $user = auth()->guard('tenant')->user();
         // Initialize properties if needed, e.g., fetching user data
-        $this->username = auth()->user()->name;
-        $this->email = auth()->user()->email;
-        $this->profile_image = auth()->user()->profile_image; // Assuming this field exists
+        $this->first_name = $user?->first_name;
+        $this->last_name = $user?->last_name;
+        $this->phone_number = $user?->phone;
+        $this->pin = $user?->pin_number;
+        $this->email = $user?->email;
+        $this->profile_image = $user->profile_image; // Assuming this field exists
     }
 
-    public function UpdateInfo()
+    public function UpdateProfileInfo()
     {
         try {
             $this->validate([
-                'email' => 'required|email|unique:users,email,' . auth()->user()->id,
-                'username' => 'required|string|max:255',
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'phone_number' => 'required|string|max:15|unique:tenants,phone,' . auth()->guard('tenant')->user()->id,
+                'pin' => 'required|min:6|max:8|unique:tenants,pin_number,' . auth()->guard('tenant')->user()->id,
+                'email' => 'required|email|unique:tenants,email,' . auth()->guard('tenant')->user()->id,
                 'preview_image' => 'nullable|mimes:png,jpg,jpeg|max:2048',//2 MB
             ]);
 
-            $user = auth()->user();
+            $user = auth()->guard('tenant')->user();
+            $user->first_name = $this->first_name;
+            $user->last_name = $this->last_name;
+            $user->phone = $this->phone_number;
+            $user->pin_number = $this->pin;
             $user->email = $this->email;
-            $user->name = $this->username;
             if ($this->preview_image) {
                 // remove the old image if exists
-                if ($user->profile_image) {
+                if ($user->image) {
                     \Storage::disk('public')->delete($user->profile_image);
                 }
                 // Store the new image
-                $user->profile_image = $this->preview_image->store('admin/company-setting', 'public');
+                $user->image = $this->preview_image->store('tenant/images', 'public');
             }
             $user->save();
 
             $this->preview_image = null; // Reset the preview image after saving
 
-            LivewireAlert::title('Email and User name updated successfully')
+            LivewireAlert::title('Profile updated successfully')
                 ->success()
                 ->timer(5000)
                 ->position('bottom-end')
@@ -91,12 +102,12 @@ class Porfile extends Component
 
         try {
             $this->validate([
-                'old_password' => 'required|string|min:6',
-                'new_password' => 'required|string|min:6',
+                'old_password' => 'required|string|min:6|max:255',
+                'new_password' => 'required|string|min:6|max:255|different:old_password',
                 'confirm_password' => 'same:new_password',
             ]);
 
-            $user = auth()->user();
+            $user = auth()->guard('tenant')->user();
 
             if (!\Hash::check($this->old_password, $user->password)) {
                 throw new \Exception('Old password is incorrect.');
@@ -109,10 +120,10 @@ class Porfile extends Component
             $this->new_password = '';
             $this->confirm_password = '';
 
-            auth()->logout(); // Log out the user
+            auth()->guard('tenant')->logout(); // Log out the user
             session()->invalidate(); // Invalidate the session
             session()->regenerateToken();
-            return redirect()->route('admin.login')->with('message', 'Password changed successfully. Please log in again.');
+            return redirect()->route('tenant.login')->with('message', 'Password changed successfully. Please log in again.');
 
 
         } catch (\Throwable $th) {
@@ -126,6 +137,7 @@ class Porfile extends Component
     }
     public function render()
     {
-        return view('livewire.admin.porfile')->layout('layouts.admin');
+        return view('livewire.tenant.porfile')
+            ->layout('layouts.tenant-app');
     }
 }

@@ -2,7 +2,7 @@
   <!-- Form -->
   <div class="flex flex-col flex-1 w-full lg:w-1/2">
     <div class="w-full max-w-md pt-10 mx-auto">
-      <a href="{{ route('admin.dashboard') }}"
+      <a href="{{ route('tenant.dashboard') }}"
         class="inline-flex items-center text-sm text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
         <svg class="stroke-current" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
           fill="none">
@@ -61,7 +61,7 @@
               <span class="p-2 text-gray-400 bg-white dark:bg-gray-900 sm:px-5 sm:py-2">Or</span>
             </div>
           </div>
-          <form wire:submit.prevent="loginSave">
+          <form wire:submit.prevent="login">
             @error('message')
               <div class="bg-red-300 text-white text-md font-normal px-4 py-2.5 rounded-md">
                 {{ $message }}
@@ -76,16 +76,27 @@
                 <!-- Email -->
                 <div>
                   <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                    Email<span class="text-error-500">*</span>
+                    Phone Number<span class="text-error-500">*</span>
                   </label>
-                  <input type="email" id="email" wire:model="email" placeholder="info@gmail.com"
+                  <input type="text" id="phoneNumber" wire:model="phoneNumber" placeholder="Enter phone number"
                     class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
-                  @error('email')
+                  @error('phoneNumber')
                     <span class="text-red-500 mt-1 ">{{ $message }}</span>
                   @enderror
                 </div>
+
+                {{-- <div>
+                  <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                    Pin Number<span class="text-error-500">*</span>
+                  </label>
+                  <input type="pin" id="pin" wire:model="pin" placeholder="Enter pin number"
+                    class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
+                  @error('pin')
+                    <span class="text-red-500 mt-1 ">{{ $message }}</span>
+                  @enderror
+                </div> --}}
                 <!-- Password -->
-                <div>
+                {{-- <div>
                   <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                     Password<span class="text-error-500">*</span>
                   </label>
@@ -113,9 +124,9 @@
                     @enderror
 
                   </div>
-                </div>
+                </div> --}}
                 <!-- Checkbox -->
-                <div class="flex items-center justify-between">
+                {{-- <div class="flex items-center justify-between">
                   <div x-data="{ checkboxToggle: false }">
                     <label for="checkboxLabelOne"
                       class="flex items-center text-sm font-normal text-gray-700 cursor-pointer select-none dark:text-gray-400">
@@ -140,7 +151,7 @@
                   </div>
                   <a href="/reset-password.html"
                     class="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">Forgot password?</a>
-                </div>
+                </div> --}}
                 <!-- Button -->
                 <div>
                   <button type="submit"
@@ -168,7 +179,7 @@
         @include('admin.partials.common-grid-shape')
         <div class="flex flex-col items-center max-w-xs">
           <a href="index.html" class="block mb-4">
-            <img src="./images/logo/auth-logo.svg" alt="Logo" />
+            <img src="{{ asset('admin/images/logo/auth-logo.svg') }}" alt="Logo" />
           </a>
           <p class="text-center text-gray-400 dark:text-white/60">
             Free and Open-Source Tailwind CSS Admin Dashboard Template
